@@ -1,14 +1,20 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { authRepository } from '../repositories/auth';
+import { useContext, useState } from "react";
+import { Link, Navigate } from "react-router-dom";
+import { authRepository } from "../repositories/auth";
+import { SessionContext } from "../SessionProvider";
 
 function Signin() {
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const { currentUser, setCurrentUser } = useContext(SessionContext);
 
   const signin = async () => {
     const user = await authRepository.signin(email, password);
-    console.log(user);
+    setCurrentUser(user);
+  };
+
+  if (currentUser != null) {
+    return <Navigate replace to="/" />;
   }
 
   return (
@@ -27,7 +33,7 @@ function Signin() {
                 </label>
                 <div className="mt-1">
                   <input
-                    onChange={(e) => setEmail(e.target.value)}
+                    onChange={e => setEmail(e.target.value)}
                     id="email"
                     name="email"
                     placeholder="メールアドレス"
@@ -60,14 +66,14 @@ function Signin() {
                 <button
                   onClick={signin}
                   className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
-                  disabled={email === '' || password === ''}
+                  disabled={email === "" || password === ""}
                 >
                   ログイン
                 </button>
               </div>
               <div className="mt-4 text-center text-sm">
                 登録は
-                <Link className="underline" to={'/signup'}>
+                <Link className="underline" to={"/signup"}>
                   こちら
                 </Link>
                 から
