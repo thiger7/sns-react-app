@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { SessionContext } from "../SessionProvider";
 import { Navigate } from "react-router-dom";
 import { SideMenu } from "../components/SideMenu";
@@ -6,12 +6,22 @@ import { postRepository } from "../repositories/post";
 
 function Home() {
   const [content, setContent] = useState("");
+  const [posts, setPosts] = useState([]);
   const { currentUser } = useContext(SessionContext);
+
+  useEffect(() => {
+    fetchPosts();
+  }, []);
 
   const createPost = async () => {
     const post = await postRepository.create(content, currentUser.id);
     console.log(post);
     setContent("");
+  };
+
+  const fetchPosts = async () => {
+    const posts = await postRepository.find();
+    setPosts(posts);
   };
 
   if (currentUser == null) {
@@ -39,7 +49,7 @@ function Home() {
               <button
                 onClick={createPost}
                 className="bg-[#34D399] text-white px-4 py-2 rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-opacity-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                disabled={content === ''}
+                disabled={content === ""}
               >
                 Post
               </button>
